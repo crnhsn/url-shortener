@@ -1,9 +1,12 @@
+using UrlShortener.Concretes.Data;
+
 namespace UrlShortener.Interfaces;
 
 public interface IDataRepository<T, U>
 {
     
-    public bool TryRead(T key, out U value);
-    public bool TryWrite(T key, U value);
+    public Task<ReadResult<U>> TryReadAsync(T key);
+    public Task<bool> TryWriteAsync(T key, U value);
+    public Task<bool> KeyExistsAsync(T key);
     
 }
