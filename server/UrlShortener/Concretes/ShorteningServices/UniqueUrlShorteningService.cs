@@ -71,7 +71,8 @@ public class UniqueUrlShorteningService : IUrlShortenerService
 
     public async Task<bool> IsShortCodeAvailable(string shortCode)
     {
-        return await _dataStore.KeyExistsAsync(shortCode);
+        bool shortCodeAlreadyExists = await _dataStore.KeyExistsAsync(shortCode);
+        return !shortCodeAlreadyExists;
     }
 
 

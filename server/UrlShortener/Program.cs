@@ -46,9 +46,12 @@ app.MapGet("/shorten", async (string longUrl, string? customAlias, IUrlShortener
 
     try
     {
-        if (!String.IsNullOrEmpty(customAlias))
+        bool userHasRequestedCustomAlias = !String.IsNullOrEmpty(customAlias);
+
+        if (userHasRequestedCustomAlias)
         {
             bool isCustomAliasAvailable = await urlShortener.IsShortCodeAvailable(customAlias);
+
             if (!isCustomAliasAvailable)
             {
                 return Results.StatusCode(404); // todo: update error handling / status code here, maybe throw custom exception for duplicate custom code that global exception handler catches and returns to client
