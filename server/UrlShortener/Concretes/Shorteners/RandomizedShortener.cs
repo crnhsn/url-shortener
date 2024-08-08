@@ -32,7 +32,26 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
         
         string encoded = _encoder.Encode(hash);
         
-        return encoded;
+        if (encoded.Length < _maxLength)
+        {
+
+        }
+
+        string truncated = encoded.Substring(0, _maxLength);
+
+        return truncated;
+    }
+
+    private string padString(string toPad, int padLength)
+    {
+        string pad = String.Empty;
+
+        while (pad.Length < padLength)
+        {
+            pad += _randomnessProvider.GenerateRandomValue();
+        }
+
+        return toPad + pad;
     }
     
 }
