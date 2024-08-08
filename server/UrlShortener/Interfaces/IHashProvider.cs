@@ -3,6 +3,6 @@ namespace UrlShortener.Interfaces;
 public interface IHashProvider<T, U>
 {
     
-    public T ComputeHash(U toHash);
+    public U ComputeHash(T toHash);
     
 }

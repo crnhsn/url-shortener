@@ -1,14 +1,9 @@
+using UrlShortener.Constants;
 using UrlShortener.Interfaces;
 
-namespace UrlShortener.Concretes.Encoding;
+namespace UrlShortener.Concretes.Encoders;
 
 public class UrlSafeBase64Encoder : IEncoder<byte[], string> {
-    
-    
-    public UrlSafeBase64Encoder()
-    {
-        
-    }
     
     public string Encode(byte[] input)
     {
@@ -21,7 +16,7 @@ public class UrlSafeBase64Encoder : IEncoder<byte[], string> {
     {
         string base64String = Convert.ToBase64String(input);
         
-        foreach (char unsafeChar in UrlSafetyConstants.URL_UNSAFE_CHARACTERS)
+        foreach (char unsafeChar in UrlSafety.URL_UNSAFE_CHARACTERS)
         {
             base64String = base64String.Replace(unsafeChar.ToString(), "");
         }

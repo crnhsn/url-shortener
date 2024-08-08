@@ -1,5 +1,5 @@
 using System.Text;
-using UrlShortener.Concretes.Encoding;
+using UrlShortener.Constants;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Concretes.Shorteners;
@@ -8,13 +8,13 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
     
     private readonly int _maxLength;
     
-    private readonly IHashProvider<byte[], string> _hashProvider;
+    private readonly IHashProvider<string, byte[]> _hashProvider;
     private readonly IEncoder<byte[], string> _encoder;
     
     private readonly IRandomnessProvider<string> _randomnessProvider;
     
     public RandomizedHashBasedShortener(int maxLength,
-                                        IHashProvider<byte[], string> hashProvider,
+                                        IHashProvider<string, byte[]> hashProvider,
                                         IEncoder<byte[], string> encoder,
                                         IRandomnessProvider<string> randomnessProvider)
     {
@@ -26,7 +26,7 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
     
     public string Shorten(string toShorten)
     {
-       
+
         string randomValue = _randomnessProvider.GenerateRandomValue();
         string randomizedString = toShorten + randomValue;
         
@@ -58,7 +58,7 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
             sb.Append(randomValue);
         }
 
-        foreach (char unsafeChar in UrlSafetyConstants.URL_UNSAFE_CHARACTERS)
+        foreach (char unsafeChar in UrlSafety.URL_UNSAFE_CHARACTERS)
         {
             sb.Replace(unsafeChar.ToString(), "");
         }
