@@ -1,4 +1,3 @@
-using UrlShortener.Encoding;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Concretes.Shorteners;

@@ -1,4 +1,4 @@
-namespace UrlShortener.Encoding;
+namespace UrlShortener.Concretes.Encoding;
 
 public enum TextEncodingType
 {

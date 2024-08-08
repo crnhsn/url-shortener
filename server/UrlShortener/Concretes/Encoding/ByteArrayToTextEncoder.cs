@@ -1,6 +1,6 @@
 using UrlShortener.Interfaces;
 
-namespace UrlShortener.Encoding;
+namespace UrlShortener.Concretes.Encoding;
 
 public class ByteArrayToTextEncoder : IEncoder<byte[], string> {
     
