@@ -2,6 +2,6 @@ namespace UrlShortener.Interfaces;
 
 public interface IUrlShortenerService
 {
-    string CreateShortUrl(string longUrl);
-    string ResolveShortUrl(string shortUrl);
+    Task<string> CreateShortUrl(string longUrl);
+    Task<string> ResolveShortUrl(string shortUrl);
 }

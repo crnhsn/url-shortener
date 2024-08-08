@@ -4,6 +4,7 @@ using UrlShortener.Concretes.Encoders;
 using UrlShortener.Concretes.Hashing;
 using UrlShortener.Concretes.Randomness;
 using UrlShortener.Concretes.Shorteners;
+using UrlShortener.Concretes.ShorteningServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ const int SHORT_URL_LENGTH = UrlShortener.Constants.Lengths.SHORT_URL_LENGTH;
 
 const string REDIS_CONNECTION_STRING = UrlShortener.Constants.DatabaseConnectionStrings.REDIS; // todo: replace with env var
 
-const int MAX_SHORTEN_RETRIES = 5;
+const int MAX_SHORTEN_RETRIES = 3;
 
 // Register dependencies
 builder.Services.AddSingleton<IHashProvider<string, byte[]>, MD5HashProvider>();
@@ -29,65 +30,47 @@ builder.Services.AddSingleton<IShorteningProvider<string, string>>(provider =>
         provider.GetRequiredService<IEncoder<byte[], string>>(),
         provider.GetRequiredService<IRandomnessProvider<string>>()));
 
+builder.Services.AddSingleton<IUrlShortenerService>(provider =>
+    new UniqueUrlShorteningService(provider.GetRequiredService<IShorteningProvider<string, string>>(),
+                                   provider.GetRequiredService<IDataRepository<string, string>>(),
+                                   MAX_SHORTEN_RETRIES,
+                                   BASE_URL));
+
 var app = builder.Build();
 
 // todo: update this to post request
 // todo: add functionality for custom short link 
-app.MapGet("/shorten/{longUrl}", async (string longUrl,
-        IShorteningProvider<string, string> shorteningService,
-        IDataRepository<string, string> database) =>
+app.MapGet("/shorten/{longUrl}", async (string longUrl, IUrlShortenerService urlShortener) =>
 {
     // todo: add validation for incoming strings, etc.
 
-    string shortCode = shorteningService.Shorten(longUrl);
-    bool shortCodeAlreadyExists = await database.KeyExistsAsync(shortCode);
-
-    if (shortCodeAlreadyExists)
+    try
     {
-        // todo: add some kind of retry logic? retry X times before returning 404 to client?
-        // probably need to account for various flows here - e.g., user passed in a custom url vs not
-        // if user passed in custom, and it alraedy exists, vs if user didn't pass in random one
-        int retryCount = 0;
-
-        while (shortCodeAlreadyExists && retryCount < MAX_SHORTEN_RETRIES)
-        {
-            shortCode = shorteningService.Shorten(longUrl);
-            shortCodeAlreadyExists = await database.KeyExistsAsync(shortCode);
-            retryCount += 1;
-        }
+        string shortenedUrl = await urlShortener.CreateShortUrl(longUrl);
+        return Results.Ok(shortenedUrl);
     }
-
-    // if we've exhausted the number of retries without seeing a new URL, return some kind of error
-    if (shortCodeAlreadyExists)
+    catch (Exception ex)
     {
-        return Results.StatusCode(404); // todo: update http code here
+        return Results.StatusCode(404); // todo: update error handling / status code
     }
-
-    bool writeSucceeded = await database.TryWriteAsync(shortCode, longUrl);
-
-    // todo: if write didn't work, retry? or error?
-    // maybe abstract away into a retry controller
-
-    string shortenedUrl = BASE_URL + shortCode;
-
-    return Results.Ok(shortenedUrl);
 })
 .WithName("ShortenUrl");
 
-app.MapGet("/expand/{shortUrl}", async (string shortUrl, IDataRepository<string, string> database) =>
+app.MapGet("/expand/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
     {
         // todo: add validation for incoming strings, etc.
+        // e.g., can't expand short URLs that don't have the expected base URL
+        // probably a library to do this
 
-        ReadResult<string> readResult = await database.TryReadAsync(shortUrl);
-        if (readResult.Success)
+        try
         {
-            return Results.Ok(readResult.Value);
+            string longUrl = await urlShortener.ResolveShortUrl(shortUrl);
+            return Results.Ok(longUrl);
         }
-        else
+        catch (Exception ex)
         {
-            return Results.StatusCode(404); // todo: update http code here / error handling here
+            return Results.StatusCode(404); // todo: update error handling / status code, maybe via global handler for exceptions
         }
-
 
     }).WithName("ExpandUrl");
 
