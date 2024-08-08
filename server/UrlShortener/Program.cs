@@ -1,3 +1,4 @@
+using UrlShortener.Concretes.Data;
 using UrlShortener.Interfaces;
 using UrlShortener.Concretes.Encoders;
 using UrlShortener.Concretes.Hashing;
@@ -9,12 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 const string BASE_URL = UrlShortener.Constants.BaseUrl.Stem; // todo: replace this with env var
 const int SHORT_URL_LENGTH = UrlShortener.Constants.Lengths.SHORT_URL_LENGTH;
 
+const string REDIS_CONNECTION_STRING = UrlShortener.Constants.DatabaseConnectionStrings.REDIS; // todo: replace with env var
+
 // Register dependencies
 builder.Services.AddSingleton<IHashProvider<string, byte[]>, MD5HashProvider>();
 
 builder.Services.AddSingleton<IEncoder<byte[], string>, UrlSafeBase64Encoder>();
 
 builder.Services.AddSingleton<IRandomnessProvider<string>>(new UrlSafeRandomStringProvider(SHORT_URL_LENGTH));
+
+builder.Services.AddSingleton<IDataRepository<string, string>>(new RedisDataRepository(REDIS_CONNECTION_STRING));
 
 builder.Services.AddSingleton<IShorteningProvider<string, string>>(provider =>
     new RandomizedHashBasedShortener(SHORT_URL_LENGTH,
