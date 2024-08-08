@@ -1,3 +1,5 @@
+using System.Text;
+using UrlShortener.Concretes.Encoding;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Concretes.Shorteners;
@@ -32,9 +34,14 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
         
         string encoded = _encoder.Encode(hash);
         
+        if (encoded.Length == 0)
+        {
+            throw new Exception("Encoding generated a string of length 0.");
+        }
+
         if (encoded.Length < _maxLength)
         {
-
+            encoded = padString(encoded, _maxLength);
         }
 
         string truncated = encoded.Substring(0, _maxLength);
@@ -44,14 +51,24 @@ public class RandomizedHashBasedShortener : IShorteningProvider<string, string> 
 
     private string padString(string toPad, int padLength)
     {
-        string pad = String.Empty;
-
-        while (pad.Length < padLength)
+        var sb = new StringBuilder(toPad);
+        while (sb.Length < padLength)
         {
-            pad += _randomnessProvider.GenerateRandomValue();
+            string randomValue = _randomnessProvider.GenerateRandomValue();
+            sb.Append(randomValue);
         }
 
-        return toPad + pad;
+        foreach (char unsafeChar in UrlSafetyConstants.URL_UNSAFE_CHARACTERS)
+        {
+            sb.Replace(unsafeChar.ToString(), "");
+        }
+
+        if (sb.Length < padLength)
+        {
+            throw new Exception("Encoded string was below max length. Tried to pad, but padding failed to sufficiently lengthen string.");
+        }
+
+        return sb.ToString();
     }
     
 }
