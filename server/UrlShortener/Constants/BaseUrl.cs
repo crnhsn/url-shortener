@@ -2,5 +2,5 @@ namespace UrlShortener.Constants;
 
 public static class BaseUrl
 {
-    public static string Stem = "localhost/";  // todo: update to be based on env var 
+    public const string Stem = "replace_with_env_var/";  // todo: update to be based on env var 
 }
