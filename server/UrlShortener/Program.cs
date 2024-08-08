@@ -33,11 +33,13 @@ var app = builder.Build();
 
 // todo: update this to post request
 // todo: add functionality for custom short link 
-app.MapGet("/shorten/{urlToShorten}", async (string urlToShorten,
+app.MapGet("/shorten/{longUrl}", async (string longUrl,
         IShorteningProvider<string, string> shorteningService,
         IDataRepository<string, string> database) =>
 {
-    string shortenedUrl = BASE_URL + shorteningService.Shorten(urlToShorten);
+    // todo: add validation for incoming strings, etc.
+
+    string shortenedUrl = BASE_URL + shorteningService.Shorten(longUrl);
     bool shortUrlAlreadyExists = await database.KeyExistsAsync(shortenedUrl);
 
     if (shortUrlAlreadyExists)
@@ -49,7 +51,7 @@ app.MapGet("/shorten/{urlToShorten}", async (string urlToShorten,
 
         while (shortUrlAlreadyExists && retryCount < MAX_SHORTEN_RETRIES)
         {
-            shortenedUrl = BASE_URL + shorteningService.Shorten(urlToShorten);
+            shortenedUrl = BASE_URL + shorteningService.Shorten(longUrl);
             shortUrlAlreadyExists = await database.KeyExistsAsync(shortenedUrl);
             retryCount += 1;
         }
@@ -61,10 +63,30 @@ app.MapGet("/shorten/{urlToShorten}", async (string urlToShorten,
         return Results.StatusCode(404); // todo: update http code here
     }
 
-    await database.TryWriteAsync(shortenedUrl, urlToShorten);
+    bool writeSucceeded = await database.TryWriteAsync(shortenedUrl, longUrl);
+
+    // todo: if write didn't work, retry? or error?
+    // maybe abstract away into a retry controller
 
     return Results.Ok(shortenedUrl);
 })
 .WithName("ShortenUrl");
+
+app.MapGet("/expand/{shortUrl}", async (string shortUrl, IDataRepository<string, string> database) =>
+    {
+        // todo: add validation for incoming strings, etc.
+
+        ReadResult<string> readResult = await database.TryReadAsync(shortUrl);
+        if (readResult.Success)
+        {
+            return Results.Ok(readResult.Value);
+        }
+        else
+        {
+            return Results.StatusCode(404); // todo: update http code here / error handling here
+        }
+
+
+    }).WithName("ExpandUrl");
 
 app.Run();
