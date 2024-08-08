@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 
 using UrlShortener.Interfaces;
@@ -9,6 +10,12 @@ public class MD5HashProvider : IHashProvider<string, byte[]>
     public byte[] ComputeHash(string toHash)
     {
         byte[] inputBytes = Encoding.UTF8.GetBytes(toHash);
-        return inputBytes; 
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] hash = md5.ComputeHash(inputBytes);
+            return hash;
+        }
+
     }
 }
