@@ -68,7 +68,7 @@ app.MapGet("/shorten/{longUrl}", async (string longUrl,
     // todo: if write didn't work, retry? or error?
     // maybe abstract away into a retry controller
 
-    return Results.Ok(shortenedUrl);
+    return Results.Ok(shortenedUrl + writeSucceeded);
 })
 .WithName("ShortenUrl");
 
