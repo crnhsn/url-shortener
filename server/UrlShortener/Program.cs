@@ -24,6 +24,8 @@ builder.Services.AddSingleton<IShorteningProvider<string, string>>(provider =>
 
 var app = builder.Build();
 
+// todo: update this to post request
+// todo: add functionality for custom short link 
 app.MapGet("/shorten/{url}", (string url, IShorteningProvider<string, string> shorteningService) =>
 {
     string shortenedUrl = BASE_URL + shorteningService.Shorten(url);
