@@ -1,6 +1,6 @@
 namespace UrlShortener.Interfaces;
 
-public interface IUrlShortener
+public interface IUrlShortenerService
 {
     string Shorten(string longUrl);
     string Expand(string shortUrl);
