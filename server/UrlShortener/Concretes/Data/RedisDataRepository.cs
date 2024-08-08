@@ -14,24 +14,28 @@ public class RedisDataRepository : IDataRepository<string, string>
         _database = connectionMultiplexer.GetDatabase();
     }
 
-    public bool TryWrite(string key, string value)
+    public async Task<bool> TryWriteAsync(string key, string value)
     {
-        return _database.StringSet(key, value, when: When.NotExists);
+        bool writeSucceeded = await _database.StringSetAsync(key, value, when: When.NotExists);
+        return writeSucceeded;
     }
 
-    public bool TryRead(string key, out string value)
+    public async Task<ReadResult<string>> TryReadAsync(string key)
     {
-        var redisValue = _database.StringGet(key);
+        var redisValue = await _database.StringGetAsync(key);
         
         if (redisValue.HasValue)
         {
-            value = redisValue.ToString();
-            return true;
+            return ReadResult<string>.SuccessResult(redisValue.ToString());
         }
         else
         {
-            value = null;
-            return false;
+            return ReadResult<string>.FailureResult();
         }
+    }
+
+    public async Task<bool> KeyExistsAsync(string key)
+    {
+        return await _database.KeyExistsAsync(key);
     }
 }

@@ -34,6 +34,7 @@ var app = builder.Build();
 app.MapGet("/shorten/{url}", (string url, IShorteningProvider<string, string> shorteningService) =>
 {
     string shortenedUrl = BASE_URL + shorteningService.Shorten(url);
+    
     return Results.Ok(shortenedUrl);
 })
 .WithName("ShortenUrl");
