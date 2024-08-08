@@ -39,36 +39,38 @@ app.MapGet("/shorten/{longUrl}", async (string longUrl,
 {
     // todo: add validation for incoming strings, etc.
 
-    string shortenedUrl = BASE_URL + shorteningService.Shorten(longUrl);
-    bool shortUrlAlreadyExists = await database.KeyExistsAsync(shortenedUrl);
+    string shortCode = shorteningService.Shorten(longUrl);
+    bool shortCodeAlreadyExists = await database.KeyExistsAsync(shortCode);
 
-    if (shortUrlAlreadyExists)
+    if (shortCodeAlreadyExists)
     {
         // todo: add some kind of retry logic? retry X times before returning 404 to client?
         // probably need to account for various flows here - e.g., user passed in a custom url vs not
         // if user passed in custom, and it alraedy exists, vs if user didn't pass in random one
         int retryCount = 0;
 
-        while (shortUrlAlreadyExists && retryCount < MAX_SHORTEN_RETRIES)
+        while (shortCodeAlreadyExists && retryCount < MAX_SHORTEN_RETRIES)
         {
-            shortenedUrl = BASE_URL + shorteningService.Shorten(longUrl);
-            shortUrlAlreadyExists = await database.KeyExistsAsync(shortenedUrl);
+            shortCode = shorteningService.Shorten(longUrl);
+            shortCodeAlreadyExists = await database.KeyExistsAsync(shortCode);
             retryCount += 1;
         }
     }
 
     // if we've exhausted the number of retries without seeing a new URL, return some kind of error
-    if (shortUrlAlreadyExists)
+    if (shortCodeAlreadyExists)
     {
         return Results.StatusCode(404); // todo: update http code here
     }
 
-    bool writeSucceeded = await database.TryWriteAsync(shortenedUrl, longUrl);
+    bool writeSucceeded = await database.TryWriteAsync(shortCode, longUrl);
 
     // todo: if write didn't work, retry? or error?
     // maybe abstract away into a retry controller
 
-    return Results.Ok(shortenedUrl + writeSucceeded);
+    string shortenedUrl = BASE_URL + shortCode;
+
+    return Results.Ok(shortenedUrl);
 })
 .WithName("ShortenUrl");
 
