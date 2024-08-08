@@ -40,13 +40,22 @@ var app = builder.Build();
 
 // todo: update this to post request
 // todo: add functionality for custom short link 
-app.MapGet("/shorten/{longUrl}", async (string longUrl, IUrlShortenerService urlShortener) =>
+app.MapGet("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
 {
     // todo: add validation for incoming strings, etc.
 
     try
     {
-        string shortenedUrl = await urlShortener.CreateShortUrl(longUrl);
+        if (!String.IsNullOrEmpty(customAlias))
+        {
+            bool isCustomAliasAvailable = await urlShortener.IsShortCodeAvailable(customAlias);
+            if (!isCustomAliasAvailable)
+            {
+                return Results.StatusCode(404); // todo: update error handling / status code here, maybe throw custom exception for duplicate custom code that global exception handler catches and returns to client
+            }
+        }
+
+        string shortenedUrl = await urlShortener.CreateShortUrl(longUrl, customAlias);
         return Results.Ok(shortenedUrl);
     }
     catch (Exception ex)
