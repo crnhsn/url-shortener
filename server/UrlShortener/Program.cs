@@ -44,7 +44,6 @@ app.MapGet("/shorten/{longUrl}", async (string longUrl, IUrlShortenerService url
 {
     // todo: add validation for incoming strings, etc.
 
-
     try
     {
         string shortenedUrl = await urlShortener.CreateShortUrl(longUrl);
@@ -57,20 +56,21 @@ app.MapGet("/shorten/{longUrl}", async (string longUrl, IUrlShortenerService url
 })
 .WithName("ShortenUrl");
 
-app.MapGet("/expand/{shortUrl}", async (string shortUrl, IDataRepository<string, string> database) =>
+app.MapGet("/expand/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
     {
         // todo: add validation for incoming strings, etc.
+        // e.g., can't expand short URLs that don't have the expected base URL
+        // probably a library to do this
 
-        ReadResult<string> readResult = await database.TryReadAsync(shortUrl);
-        if (readResult.Success)
+        try
         {
-            return Results.Ok(readResult.Value);
+            string longUrl = await urlShortener.ResolveShortUrl(shortUrl);
+            return Results.Ok(longUrl);
         }
-        else
+        catch (Exception ex)
         {
-            return Results.StatusCode(404); // todo: update http code here / error handling here
+            return Results.StatusCode(404); // todo: update error handling / status code, maybe via global handler for exceptions
         }
-
 
     }).WithName("ExpandUrl");
 

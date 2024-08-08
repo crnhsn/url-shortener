@@ -1,3 +1,4 @@
+using UrlShortener.Concretes.Data;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Concretes.ShorteningServices;
@@ -68,12 +69,19 @@ public class UniqueUrlShorteningService : IUrlShortenerService
         {
             throw new Exception("Generated shortened URL, but failed to write shortened URL to data store.");
         }
-        
     }
 
-    public Task<string> ResolveShortUrl(string shortUrl)
+    public async Task<string> ResolveShortUrl(string shortUrl)
     {
-        throw new NotImplementedException();
+        ReadResult<string> readResult = await _dataStore.TryReadAsync(shortUrl);
+        if (readResult.Success)
+        {
+            return readResult.Value;
+        }
+        else
+        {
+            throw new Exception($"Unable to resolve {shortUrl}"); // todo: update ReadResult to store exceptions, and add to this
+        }
     }
     
 }
