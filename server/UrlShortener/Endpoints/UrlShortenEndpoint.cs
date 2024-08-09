@@ -7,7 +7,7 @@ public static class UrlShortenEndpoint
     public static void MapUrlShortenEndpoint(this IEndpointRouteBuilder app)
     {
         
-        app.MapGet("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
+        app.MapPost("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
             {
                 // todo: add validation for incoming strings, etc.
             
