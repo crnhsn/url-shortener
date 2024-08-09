@@ -14,7 +14,7 @@ public static class UrlShortenEndpoint
             
                 try
                 {
-                    bool userHasRequestedCustomAlias = !String.IsNullOrEmpty(customAlias);
+                    bool userHasRequestedCustomAlias = !String.IsNullOrWhiteSpace(customAlias);
             
                     if (userHasRequestedCustomAlias)
                     {

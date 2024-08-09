@@ -31,7 +31,7 @@ public class UniqueUrlShorteningService : IUrlShortenerService
         
         string shortCode = String.Empty;
 
-        if (String.IsNullOrEmpty(customShortCode))
+        if (String.IsNullOrWhiteSpace(customShortCode))
         {
             shortCode = await createShortCodeFromLongUrl(longUrl);
         }
