@@ -6,6 +6,7 @@ namespace UrlShortener.InputValidation
     {
         private static readonly string[] HTTP_PREFIXES = { "https://", "http://" };
     
+        // todo: make url validation more robust
         public static bool IsValidUrl(string input, out string? validatedUrl)
         {
             if (String.IsNullOrWhiteSpace(input))
