@@ -1,3 +1,4 @@
+using UrlShortener.InputValidation;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Endpoints;
@@ -7,7 +8,7 @@ public static class UrlExpansionEndpoint
     
     public static void MapUrlExpansionEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/expand/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
+        app.MapGet("/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
         {
             // todo: add validation for incoming strings, etc.
             // e.g., can't expand short URLs that don't have the expected base URL
@@ -16,14 +17,16 @@ public static class UrlExpansionEndpoint
             try
             {
                 string longUrl = await urlShortener.ResolveShortUrl(shortUrl);
-                // ensure longUrl is valid URL before issuing a redirect
-                // if not valid URL (empty, null, etc.), throw exception or handle error somehow
-
-                return Results.Redirect(longUrl);
+                bool urlIsValid = UrlValidator.IsValidUrl(longUrl, out string validatedUrl);
+                if (!urlIsValid)
+                {
+                    return Results.StatusCode(404); // not found or invalid
+                }
+                return Results.Redirect(validatedUrl);
             }
             catch (Exception ex)
             {
-                return Results.StatusCode(404); // todo: update error handling / status code, maybe via global handler for exceptions
+                return Results.StatusCode(500);
             }
     
         }).WithName("ExpandUrl");
