@@ -1,7 +1,7 @@
 using UrlShortener.Concretes.Data;
 using UrlShortener.Interfaces;
 
-namespace UrlShortener.Concretes.ShorteningServices;
+namespace UrlShortener.Concretes.ShorteningService;
 
 public class UniqueUrlShorteningService : IUrlShortenerService
 {

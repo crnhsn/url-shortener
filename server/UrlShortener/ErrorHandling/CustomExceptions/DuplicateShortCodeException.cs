@@ -1,4 +1,4 @@
-namespace UrlShortener.CustomExceptions;
+namespace UrlShortener.ErrorHandling.CustomExceptions;
 
 public class DuplicateShortCodeException : System.Exception
 {
