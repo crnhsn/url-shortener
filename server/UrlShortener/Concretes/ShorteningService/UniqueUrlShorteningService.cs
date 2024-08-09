@@ -79,9 +79,9 @@ public class UniqueUrlShorteningService : IUrlShortenerService
     private async Task<string> createShortCodeFromLongUrl(string longUrl)
     {
         string shortCode = _shortener.Shorten(longUrl);
-        bool shortCodeAlreadyExists = await IsShortCodeAvailable(shortCode);
+        bool shortCodeAvailable = await IsShortCodeAvailable(shortCode);
 
-        if (shortCodeAlreadyExists)
+        if (!shortCodeAvailable)
         {
             shortCode = await retryShortCodeGeneration(longUrl, MAX_SHORTEN_RETRIES);
         }
@@ -107,7 +107,7 @@ public class UniqueUrlShorteningService : IUrlShortenerService
             // probably need to account for various flows here - e.g., user passed in a custom url vs not
             // if user passed in custom, and it already exists, vs if user didn't pass in random one
             shortCode = _shortener.Shorten(longUrl);
-            shortCodeAlreadyExists = await IsShortCodeAvailable(shortCode);
+            shortCodeAlreadyExists = !await IsShortCodeAvailable(shortCode);
             retryCount += 1;
 
         }
