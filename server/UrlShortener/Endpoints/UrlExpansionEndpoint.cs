@@ -7,7 +7,7 @@ public static class UrlExpansionEndpoint
     
     public static void MapUrlExpansionEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/expand", async (string shortUrl, IUrlShortenerService urlShortener) =>
+        app.MapGet("/expand/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
         {
             // todo: add validation for incoming strings, etc.
             // e.g., can't expand short URLs that don't have the expected base URL
