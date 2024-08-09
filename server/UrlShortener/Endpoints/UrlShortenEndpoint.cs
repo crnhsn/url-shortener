@@ -1,3 +1,4 @@
+using UrlShortener.InputValidation;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Endpoints;
@@ -24,8 +25,15 @@ public static class UrlShortenEndpoint
                             return Results.Ok("url already taken"); // todo: update error handling / status code here, maybe throw custom exception for duplicate custom code that global exception handler catches and returns to client
                         }
                     }
+
+                    bool urlIsValid = UrlValidator.IsValidUrl(longUrl, out string validatedLongUrl);
+                    
+                    if (!urlIsValid)
+                    {
+                        return Results.Ok("invalid input url"); // todo: update error handling, status code, etc. here - throw custom?
+                    }
             
-                    string shortenedUrl = await urlShortener.CreateShortUrl(longUrl, customAlias);
+                    string shortenedUrl = await urlShortener.CreateShortUrl(validatedLongUrl, customAlias);
                     return Results.Ok(shortenedUrl);
                 }
                 catch (Exception ex)

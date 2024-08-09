@@ -16,7 +16,10 @@ public static class UrlExpansionEndpoint
             try
             {
                 string longUrl = await urlShortener.ResolveShortUrl(shortUrl);
-                return Results.Ok(longUrl);
+                // ensure longUrl is valid URL before issuing a redirect
+                // if not valid URL (empty, null, etc.), throw exception or handle error somehow
+
+                return Results.Redirect(longUrl);
             }
             catch (Exception ex)
             {
