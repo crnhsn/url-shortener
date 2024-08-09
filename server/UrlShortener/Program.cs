@@ -38,9 +38,7 @@ builder.Services.AddSingleton<IUrlShortenerService>(provider =>
 
 var app = builder.Build();
 
-// todo: update this to post request
-// todo: add functionality for custom short link 
-app.MapGet("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
+app.MapPost("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
 {
     // todo: add validation for incoming strings, etc.
 
@@ -68,7 +66,7 @@ app.MapGet("/shorten", async (string longUrl, string? customAlias, IUrlShortener
 })
 .WithName("ShortenUrl");
 
-app.MapGet("/expand/{shortUrl}", async (string shortUrl, IUrlShortenerService urlShortener) =>
+app.MapGet("/expand", async (string shortUrl, IUrlShortenerService urlShortener) =>
     {
         // todo: add validation for incoming strings, etc.
         // e.g., can't expand short URLs that don't have the expected base URL
