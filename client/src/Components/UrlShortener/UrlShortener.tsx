@@ -22,7 +22,7 @@ const UrlShortener : React.FC = () => {
 
     // todo - put all these constants into a file and sync them with server somehow
     // maybe a json config file that both the JS and C# read?
-    const MAX_ALIAS_LENGTH = 20; // todo - lift this into env var somehow, should sync with server max length
+    const MAX_ALIAS_LENGTH = 8; // todo - lift this into env var somehow, should sync with server max length
     const ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]+$/;
 
     const MAX_URL_LENGTH = 2048; // todo - lift this into env var somehow, should sync with server max length
@@ -141,6 +141,7 @@ const UrlShortener : React.FC = () => {
     // todo: extract the error messages out into constants file
 
     const handleError = (errorMessage: string) => {
+        //setShortenedUrl(""); // an input failure should reset the URL display
         switch (errorMessage)
         {
             case URL_NOT_PROVIDED:
