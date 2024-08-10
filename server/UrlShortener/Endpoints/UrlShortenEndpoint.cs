@@ -9,6 +9,7 @@ public static class UrlShortenEndpoint
     {
         public const string UrlNotProvided = "URL_REQUIRED";
         public const string UrlInvalid = "URL_INVALID";
+        public const string UrlTooLong = "URL_LENGTH";
 
         public const string CustomAliasNotAlphanumeric = "CUSTOM_ALIAS_FORMAT";
         public const string CustomAliasTooLong = "CUSTOM_ALIAS_LENGTH";
@@ -22,6 +23,7 @@ public static class UrlShortenEndpoint
     {
         [Required(ErrorMessage = ErrorMessages.UrlNotProvided)]
         [Url(ErrorMessage = ErrorMessages.UrlInvalid)]
+        [StringLength(Constants.Lengths.MAX_LONG_URL_LENGTH, ErrorMessage = ErrorMessages.UrlTooLong)]
         public string LongUrl {get; set;}
 
         [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.CustomAliasNotAlphanumeric)]
