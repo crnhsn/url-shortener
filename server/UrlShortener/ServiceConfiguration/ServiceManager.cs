@@ -18,6 +18,8 @@ public static class ServiceManager
     
     const int MAX_SHORTEN_RETRIES = 3;
     
+    const string ALLOWED_CORS_ORIGINS =  "http://localhost:3000"; // todo: replace with env var, in production this will probably be different
+
     public static void ConfigureCustomServices(this IServiceCollection services)
     {
         
@@ -42,5 +44,19 @@ public static class ServiceManager
                                            MAX_SHORTEN_RETRIES,
                                            BASE_URL));
         
+    }
+
+    public static void ConfigureCors(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowList", policyBuilder =>
+            {
+                policyBuilder
+                    .WithOrigins(ALLOWED_CORS_ORIGINS)  // Use environment variable values
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
     }
 }
