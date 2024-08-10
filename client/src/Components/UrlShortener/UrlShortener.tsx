@@ -4,7 +4,7 @@ import {Box, Button, Card, CardHeader, Center, Heading, Stack, VStack} from "@ch
 import InputBox from '../Inputs/InputBox/InputBox';
 
 import {shortenUrl} from "../../API/UrlShortenerAPI";
-import ShortUrlDisplay from '../ShortUrlDisplay/ShortUrlDisplay';
+import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
 
 
 const UrlShortener : React.FC = () => {
@@ -111,7 +111,7 @@ const UrlShortener : React.FC = () => {
                   </Button>
                 </VStack>
               </Card>
-              <ShortUrlDisplay shortenedUrl={shortenedUrl} />
+              <ShortUrlDisplayWithCopy shortenedUrl={shortenedUrl} />
             </VStack>
           </Box>
         </Center>
