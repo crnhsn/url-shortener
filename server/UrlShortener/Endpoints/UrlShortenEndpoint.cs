@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using UrlShortener.InputValidation;
 using UrlShortener.Interfaces;
 
@@ -5,15 +6,33 @@ namespace UrlShortener.Endpoints;
 
 public static class UrlShortenEndpoint
 {
+    private class ShortenRequest
+    {
+        [Required(ErrorMessage = "URL_REQUIRED")]
+        [Url(ErrorMessage = "INVALID_URL")]
+
+        public string LongUrl {get; set;}
+
+        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "CUSTOM_ALIAS_NON_ALPHANUMERIC")]
+        [StringLength(Constants.Lengths.SHORT_URL_LENGTH, ErrorMessage = "CUSTOM_ALIAS_LENGTH")]
+        public string? CustomAlias {get; set;}
+    }
+
     public static void MapUrlShortenEndpoint(this IEndpointRouteBuilder app)
     {
         
-        app.MapPost("/shorten", async (string longUrl, string? customAlias, IUrlShortenerService urlShortener) =>
+        app.MapPost("/shorten", async (ShortenRequest shortenRequest, IUrlShortenerService urlShortener) =>
             {
                 // todo: add validation for incoming strings, etc.
+
+                
             
                 try
                 {
+                    string longUrl = shortenRequest.LongUrl;
+                    string? customAlias = shortenRequest.CustomAlias;
+
+
                     bool userHasRequestedCustomAlias = !String.IsNullOrWhiteSpace(customAlias);
             
                     if (userHasRequestedCustomAlias)
