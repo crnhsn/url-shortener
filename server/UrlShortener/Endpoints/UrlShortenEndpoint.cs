@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using UrlShortener.InputValidation;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Endpoints;
@@ -23,7 +22,6 @@ public static class UrlShortenEndpoint
     {
         [Required(ErrorMessage = ErrorMessages.UrlNotProvided)]
         [Url(ErrorMessage = ErrorMessages.UrlInvalid)]
-
         public string LongUrl {get; set;}
 
         [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.CustomAliasNotAlphanumeric)]
@@ -33,7 +31,6 @@ public static class UrlShortenEndpoint
 
     public static void MapUrlShortenEndpoint(this IEndpointRouteBuilder app)
     {
-        
         app.MapPost("/shorten", async (ShortenRequest shortenRequest, IUrlShortenerService urlShortener) =>
             {
                 try
@@ -80,7 +77,6 @@ public static class UrlShortenEndpoint
                 }
             })
             .WithName("ShortenUrl");
-            
         
     }
     
