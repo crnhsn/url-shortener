@@ -6,8 +6,6 @@ import InputBox from '../Inputs/InputBox/InputBox';
 import {shortenUrl} from "../../API/UrlShortenerAPI";
 import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
 
-import axios, { AxiosError, AxiosResponse } from 'axios';
-
 
 const UrlShortener : React.FC = () => {
 
@@ -42,12 +40,10 @@ const UrlShortener : React.FC = () => {
     const UNEXPECTED_ERROR = "INTERNAL_SERVER_ERROR";
 
     // error messages client displays - todo - lift into file / env? maybe not env
-    const URL_NOT_PROVIDED_MESSAGE = "URL is required. Please enter a URL starting with http or https.";
-    const URL_INVALID_MESSAGE = "The provided URL is invalid. Please enter a valid URL.";
+    const URL_NOT_PROVIDED_OR_INVALID_MESSAGE = "Please enter a valid URL, starting with http or https.";
     const URL_TOO_LONG_MESSAGE = "The provided URL is too long. Please shorten the URL.";
 
-    const CUSTOM_ALIAS_NOT_ALPHANUMERIC_MESSAGE = "The custom alias must be alphanumeric. Please choose another alias.";
-    const CUSTOM_ALIAS_TOO_LONG_MESSAGE = `The custom alias must be ${MAX_ALIAS_LENGTH} characters or fewer.`;
+    const CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE = `The custom alias must be alphanumeric and fewer than ${MAX_ALIAS_LENGTH} characters. Please choose another alias.`;
     const CUSTOM_ALIAS_UNAVAILABLE_MESSAGE = "The provided alias is not available. Please select another.";
 
     const UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred. Please try again later.";
@@ -80,16 +76,21 @@ const UrlShortener : React.FC = () => {
 
         if (urlInvalid) {
             setUrlToShortenValid(false);
-            setUrlErrorMessage("Invalid URL. Please enter a valid URL, starting with http or https.");
-        } else {
+            setUrlErrorMessage(URL_NOT_PROVIDED_OR_INVALID_MESSAGE);
+        }
+        else
+        {
             setUrlToShortenValid(true);
             setUrlErrorMessage("");
         }
 
-        if (aliasInvalid) {
+        if (aliasInvalid)
+        {
             setCustomAliasValid(false);
-            setAliasErrorMessage(`Custom alias must be alphanumeric and ${MAX_ALIAS_LENGTH} characters or fewer.`);
-        } else {
+            setAliasErrorMessage(CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE);
+        }
+        else
+        {
             setCustomAliasValid(true);
             setAliasErrorMessage("");
         }
@@ -128,7 +129,6 @@ const UrlShortener : React.FC = () => {
                 // and handle
             else
             {
-                console.log("got here");
                 handleError(response.data);
             }
         }
@@ -145,12 +145,12 @@ const UrlShortener : React.FC = () => {
         {
             case URL_NOT_PROVIDED:
                 setUrlToShortenValid(false);
-                setUrlErrorMessage(URL_NOT_PROVIDED_MESSAGE);
+                setUrlErrorMessage(URL_NOT_PROVIDED_OR_INVALID_MESSAGE);
                 break;
 
             case URL_INVALID:
                 setUrlToShortenValid(false);
-                setUrlErrorMessage(URL_INVALID_MESSAGE);
+                setUrlErrorMessage(URL_NOT_PROVIDED_OR_INVALID_MESSAGE);
                 break;
 
             case URL_TOO_LONG:
@@ -160,12 +160,12 @@ const UrlShortener : React.FC = () => {
 
             case CUSTOM_ALIAS_NOT_ALPHANUMERIC:
                 setCustomAliasValid(false);
-                setAliasErrorMessage(CUSTOM_ALIAS_NOT_ALPHANUMERIC_MESSAGE);
+                setAliasErrorMessage(CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE);
                 break;
 
             case CUSTOM_ALIAS_TOO_LONG:
                 setCustomAliasValid(false);
-                setAliasErrorMessage(CUSTOM_ALIAS_TOO_LONG_MESSAGE);
+                setAliasErrorMessage(CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE);
                 break;
 
             case CUSTOM_ALIAS_UNAVAILABLE:
