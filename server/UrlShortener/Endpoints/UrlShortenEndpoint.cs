@@ -74,8 +74,10 @@ public static class UrlShortenEndpoint
                 catch (Exception ex)
                 {
                     // todo: log exception?
+                    // todo: catch custom exceptions here and return different error to client if needed
 
-                    return Results.Problem(ErrorMessages.InternalServerError);
+                    return Results.Problem(ErrorMessages.InternalServerError,
+                                           statusCode: StatusCodes.Status500InternalServerError);
                 }
             })
             .WithName("ShortenUrl");
