@@ -4,6 +4,7 @@ import {Button} from "@chakra-ui/react";
 import InputBox from '../Inputs/InputBox/InputBox';
 
 import axios from 'axios';
+import {shortenUrl} from "../../API/UrlShortenerAPI";
 
 
 const UrlShortener : React.FC = () => {
@@ -31,48 +32,27 @@ const UrlShortener : React.FC = () => {
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log("called handle submit");
         if (!urlIsValid(urlToShorten)) {
 
             // display error
-            return; // exit function
+            return; // exit function, todo 
         }
 
         if (!customAliasIsValid(customAlias)) {
             // display error
-            return; // exit function
+            return; // exit function, todo
         }
 
-        sendShortenRequest();
-    }
-
-    const api = axios.create(
-        {
-            baseURL: "http://localhost:5275",
-
-        });
-
-    const sendShortenRequest = async () => {
-
         try {
-            const response = await axios.post('http://localhost:5275/shorten',
-                                              {
-                                                  longUrl: urlToShorten,
-                                                  customAlias: customAlias || undefined
-                                              });
 
-            console.log(response.data);
+            await shortenUrl(urlToShorten, customAlias);
 
         }
         catch (error) {
-            console.error(error);
+            // todo: fill this out
         }
-
-
-
-        console.log("todo: implement this! actually send the request");
-
     }
 
     const urlIsValid = (longUrl : string) : boolean => {
