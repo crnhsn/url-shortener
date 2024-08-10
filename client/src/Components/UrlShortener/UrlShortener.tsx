@@ -1,16 +1,17 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Card, CardHeader, Center, Heading, Stack, VStack} from "@chakra-ui/react";
+import {Box, Button, Card, CardHeader, Center, Heading, Stack, VStack} from "@chakra-ui/react";
 
 import InputBox from '../Inputs/InputBox/InputBox';
 
-import axios from 'axios';
 import {shortenUrl} from "../../API/UrlShortenerAPI";
+import ShortUrlDisplay from '../ShortUrlDisplay/ShortUrlDisplay';
 
 
 const UrlShortener : React.FC = () => {
     
     const [urlToShorten, setUrlToShorten] = useState("");
     const [customAlias, setCustomAlias] = useState("");
+    const [shortenedUrl, setShortenedUrl] = useState("");
     
     const handleUrlToShortenChange = (e : ChangeEvent<HTMLInputElement>) => {
         
@@ -47,7 +48,10 @@ const UrlShortener : React.FC = () => {
 
         try {
 
-            await shortenUrl(urlToShorten, customAlias);
+            const response = await shortenUrl(urlToShorten, customAlias);
+
+            // todo: validate response
+            setShortenedUrl(response);
 
         }
         catch (error) {
@@ -76,38 +80,44 @@ const UrlShortener : React.FC = () => {
 
 
     return (
-        <Center>
-            <div className="UrlShortener">
+        <Center height="100vh">
+          <Box className="UrlShortener" p={6} maxW="md" w="100%">
+            <VStack spacing={6}>
+              <Card w="100%">
+                <CardHeader>
+                  <Heading size='md' textAlign="center">URL Shortener</Heading>
+                </CardHeader>
+                <VStack spacing={4} p={4}>
+                  <InputBox
+                    placeholderText="link to shorten"
+                    onChange={handleUrlToShortenChange}
+                    onKeyDown={handleKeyDown}
+                    className="UrlInputBox"
+                  />
 
-                <VStack>
-                    <Card>
-                        <CardHeader>
-                            <Heading size='md'>URL Shortener</Heading>
-                        </CardHeader>
-                            <VStack>
-
-                                <InputBox placeholderText={"link to shorten"}
-                                          onChange={handleUrlToShortenChange}
-                                          onKeyDown={handleKeyDown}
-                                          className={"UrlInputBox"} />
-
-                                <InputBox placeholderText={"custom alias (optional)"}
-                                          onChange={handleCustomAliasChange}
-                                          onKeyDown={handleKeyDown}
-                                          className={"CustomAliasInputBox"} />
-
-                            </VStack>
-                    </Card>
-
-                    <Button onClick={handleSubmitButtonClick}>
-                        Shorten link!
-                    </Button>
-
+                  <InputBox
+                    placeholderText="custom alias (optional)"
+                    onChange={handleCustomAliasChange}
+                    onKeyDown={handleKeyDown}
+                    className="CustomAliasInputBox"
+                  />
                 </VStack>
+              </Card>
 
-            </div>
+              <Button
+                onClick={handleSubmitButtonClick}
+                size="lg"
+                w="100%"
+              >
+                Shorten link!
+              </Button>
+
+              <ShortUrlDisplay shortenedUrl={shortenedUrl} />
+            </VStack>
+          </Box>
         </Center>
-    ); 
+      );
+
     
 }
 
