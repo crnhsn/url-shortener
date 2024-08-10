@@ -1,11 +1,13 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import UrlShortener from "./Components/UrlShortener/UrlShortener";
+
+
 
 function App() {
   return (
     <div className="App">
-      Hello world
+      <UrlShortener />
     </div>
   );
 }
