@@ -138,10 +138,8 @@ const UrlShortener : React.FC = () => {
         }
     };
 
-    // todo: extract the error messages out into constants file
-
     const handleError = (errorMessage: string) => {
-        //setShortenedUrl(""); // an input failure should reset the URL display
+        setShortenedUrl(""); // an input failure should reset the URL display
         switch (errorMessage)
         {
             case URL_NOT_PROVIDED:
