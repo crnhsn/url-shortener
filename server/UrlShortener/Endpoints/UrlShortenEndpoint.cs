@@ -6,15 +6,28 @@ namespace UrlShortener.Endpoints;
 
 public static class UrlShortenEndpoint
 {
+    private static class ErrorMessages
+    {
+        public const string UrlNotProvided = "URL_REQUIRED";
+        public const string UrlInvalid = "URL_INVALID";
+
+        public const string CustomAliasNotAlphanumeric = "CUSTOM_ALIAS_FORMAT";
+        public const string CustomAliasTooLong = "CUSTOM_ALIAS_LENGTH";
+        public const string CustomAliasUnavailable = "CUSTOM_ALIAS_UNAVAILABLE";
+
+        public const string InternalServerError = "INTERNAL_SERVER_ERROR";
+
+    }
+
     private class ShortenRequest
     {
-        [Required(ErrorMessage = "URL_REQUIRED")]
-        [Url(ErrorMessage = "INVALID_URL")]
+        [Required(ErrorMessage = ErrorMessages.UrlNotProvided)]
+        [Url(ErrorMessage = ErrorMessages.UrlInvalid)]
 
         public string LongUrl {get; set;}
 
-        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "CUSTOM_ALIAS_NON_ALPHANUMERIC")]
-        [StringLength(Constants.Lengths.SHORT_URL_LENGTH, ErrorMessage = "CUSTOM_ALIAS_LENGTH")]
+        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.CustomAliasNotAlphanumeric)]
+        [StringLength(Constants.Lengths.SHORT_URL_LENGTH, ErrorMessage = ErrorMessages.CustomAliasTooLong)]
         public string? CustomAlias {get; set;}
     }
 
@@ -37,10 +50,7 @@ public static class UrlShortenEndpoint
                     if (!isValid)
                     {
                         List<string?> errorMessages = validationResults.Select(r => r.ErrorMessage).ToList();
-                        errorMessages = errorMessages.Where(e => true).ToList();
-
                         return Results.BadRequest(errorMessages);
-
                     }
 
                     string longUrl = shortenRequest.LongUrl;
@@ -54,23 +64,19 @@ public static class UrlShortenEndpoint
             
                         if (!isCustomAliasAvailable)
                         {
-                            return Results.Ok("url already taken"); // todo: update error handling / status code here, maybe throw custom exception for duplicate custom code that global exception handler catches and returns to client
+                            return Results.Conflict(ErrorMessages.CustomAliasUnavailable);
                         }
                     }
 
-                    bool urlIsValid = UrlValidator.IsValidUrl(longUrl, out string validatedLongUrl);
+                    string shortenedUrl = await urlShortener.CreateShortUrl(longUrl, customAlias);
                     
-                    if (!urlIsValid)
-                    {
-                        return Results.Ok("invalid input url"); // todo: update error handling, status code, etc. here - throw custom?
-                    }
-            
-                    string shortenedUrl = await urlShortener.CreateShortUrl(validatedLongUrl, customAlias);
                     return Results.Ok(shortenedUrl);
                 }
                 catch (Exception ex)
                 {
-                    return Results.Ok(ex.ToString()); // todo: update error handling / status code
+                    // todo: log exception?
+
+                    return Results.Problem(ErrorMessages.InternalServerError);
                 }
             })
             .WithName("ShortenUrl");
