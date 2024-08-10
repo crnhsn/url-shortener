@@ -32,7 +32,7 @@ public static class UrlExpansionEndpoint
     
     public static void MapUrlExpansionEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/s/{shortCode}", async (string shortCode, IUrlShortenerService urlShortener) =>
+        app.MapGet("/{shortCode}", async (string shortCode, IUrlShortenerService urlShortener) =>
         {
             try
             {
