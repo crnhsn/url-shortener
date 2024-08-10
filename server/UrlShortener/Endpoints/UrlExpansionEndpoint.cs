@@ -36,6 +36,9 @@ public static class UrlExpansionEndpoint
         {
             try
             {
+                // bind the incoming short code to a model so validation of the short code
+                // can just use existing model validation flow instead of needing custom flow
+                
                 var expansionRequest = new ExpansionRequest(shortCode);
 
                 var validationContext = new ValidationContext(expansionRequest);
