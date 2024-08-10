@@ -7,6 +7,11 @@ interface ShortUrlDisplayProps {
 }
 
 const ShortUrlDisplay: React.FC<ShortUrlDisplayProps> = ({ shortenedUrl }) => {
+
+  const copyToClipboardOnClick = (text : string) => {
+
+  }
+
   return (
     <InputGroup>
       <Input
@@ -20,6 +25,7 @@ const ShortUrlDisplay: React.FC<ShortUrlDisplayProps> = ({ shortenedUrl }) => {
       {shortenedUrl && (
         <InputRightElement>
           <IconButton
+            onClick={() => {navigator.clipboard.writeText(shortenedUrl)}}
             aria-label='Copy URL'
             icon={<BiSolidCopy />}
             fontSize="1.5em"
