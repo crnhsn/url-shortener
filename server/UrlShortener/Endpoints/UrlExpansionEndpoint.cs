@@ -23,14 +23,21 @@ public static class UrlExpansionEndpoint
         [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.ShortCodeIsNotAlphanumeric)]
         [StringLength(Constants.Lengths.MAX_LONG_URL_LENGTH, ErrorMessage = ErrorMessages.ShortCodeTooLong)]
         public string ShortCode {get; set;}
+
+        public ExpansionRequest(string shortCode)
+        {
+            ShortCode = shortCode;
+        }
     }
     
     public static void MapUrlExpansionEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/s/{shortCode}", async (ExpansionRequest expansionRequest, IUrlShortenerService urlShortener) =>
+        app.MapGet("/s/{shortCode}", async (string shortCode, IUrlShortenerService urlShortener) =>
         {
             try
             {
+                var expansionRequest = new ExpansionRequest(shortCode);
+
                 var validationContext = new ValidationContext(expansionRequest);
                 var validationResults = new List<ValidationResult>();
                 bool isValid = Validator.TryValidateObject(expansionRequest,
@@ -43,8 +50,6 @@ public static class UrlExpansionEndpoint
                     List<string?> errorMessages = validationResults.Select(r => r.ErrorMessage).ToList();
                     return Results.BadRequest(errorMessages);
                 }
-
-                string shortCode = expansionRequest.ShortCode;
 
                 string longUrl = await urlShortener.ResolveShortUrl(shortCode);
 
