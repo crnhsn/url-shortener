@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Button} from "@chakra-ui/react";
+import {Button, Card, CardHeader, Center, Heading, Stack, VStack} from "@chakra-ui/react";
 
 import InputBox from '../Inputs/InputBox/InputBox';
 
@@ -76,23 +76,37 @@ const UrlShortener : React.FC = () => {
 
 
     return (
-        <div className="UrlShortener">
+        <Center>
+            <div className="UrlShortener">
 
-            <InputBox placeholderText={"link to shorten"}
-                      onChange={handleUrlToShortenChange}
-                      onKeyDown={handleKeyDown}
-                      className={"UrlInputBox"} />
+                <VStack>
+                    <Card>
+                        <CardHeader>
+                            <Heading size='md'>URL Shortener</Heading>
+                        </CardHeader>
+                            <VStack>
 
-            <InputBox placeholderText={"custom alias (optional)"}
-                      onChange={handleCustomAliasChange}
-                      onKeyDown={handleKeyDown}
-                      className={"CustomAliasInputBox"} />
+                                <InputBox placeholderText={"link to shorten"}
+                                          onChange={handleUrlToShortenChange}
+                                          onKeyDown={handleKeyDown}
+                                          className={"UrlInputBox"} />
 
-            <Button onClick={handleSubmitButtonClick}>
-                Shorten link!
-            </Button>
+                                <InputBox placeholderText={"custom alias (optional)"}
+                                          onChange={handleCustomAliasChange}
+                                          onKeyDown={handleKeyDown}
+                                          className={"CustomAliasInputBox"} />
 
-        </div>
+                            </VStack>
+                    </Card>
+
+                    <Button onClick={handleSubmitButtonClick}>
+                        Shorten link!
+                    </Button>
+
+                </VStack>
+
+            </div>
+        </Center>
     ); 
     
 }
