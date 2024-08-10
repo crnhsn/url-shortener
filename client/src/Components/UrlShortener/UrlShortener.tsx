@@ -101,22 +101,22 @@ const UrlShortener : React.FC = () => {
                     onKeyDown={handleKeyDown}
                     className="CustomAliasInputBox"
                   />
+
+                  <Button
+                    onClick={handleSubmitButtonClick}
+                    size="md"
+                    alignSelf="center"
+                  >
+                    Shorten link!
+                  </Button>
                 </VStack>
               </Card>
-
-              <Button
-                onClick={handleSubmitButtonClick}
-                size="lg"
-                w="100%"
-              >
-                Shorten link!
-              </Button>
-
               <ShortUrlDisplay shortenedUrl={shortenedUrl} />
             </VStack>
           </Box>
         </Center>
       );
+
 
     
 }
