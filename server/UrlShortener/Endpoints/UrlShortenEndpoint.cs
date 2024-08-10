@@ -23,15 +23,28 @@ public static class UrlShortenEndpoint
         
         app.MapPost("/shorten", async (ShortenRequest shortenRequest, IUrlShortenerService urlShortener) =>
             {
-                // todo: add validation for incoming strings, etc.
-
-                
-            
                 try
                 {
+                    // validate incoming POST request params via model validation
+                    var validationContext = new ValidationContext(shortenRequest);
+                    var validationResults = new List<ValidationResult>();
+
+                    bool isValid = Validator.TryValidateObject(shortenRequest,
+                                                               validationContext,
+                                                               validationResults,
+                                                               validateAllProperties:true);
+
+                    if (!isValid)
+                    {
+                        List<string?> errorMessages = validationResults.Select(r => r.ErrorMessage).ToList();
+                        errorMessages = errorMessages.Where(e => true).ToList();
+
+                        return Results.BadRequest(errorMessages);
+
+                    }
+
                     string longUrl = shortenRequest.LongUrl;
                     string? customAlias = shortenRequest.CustomAlias;
-
 
                     bool userHasRequestedCustomAlias = !String.IsNullOrWhiteSpace(customAlias);
             
