@@ -186,17 +186,18 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
     };
 
     return (
-        <Center height="100vh">
-          <Box className="UrlShortener" p={6} maxW="md" w="100%">
-            <VStack spacing={6}>
-              <Card w="100%">
+        <Center height="100vh" bg="gray.50">
+          <Box className="UrlShortener" p={4} w="lg"  bg="white" borderRadius="lg" boxShadow="lg">
+            <VStack spacing={5}>
+              <Card w="100%" borderRadius="sm" boxShadow="sm">
                 <CardHeader>
-                    <Heading size='md' textAlign="center">{componentHeading ? componentHeading : "URL Shortener"}</Heading>
+                  <Heading size="lg" textAlign="center" color="blue.600">
+                    {componentHeading ? componentHeading : "URL Shortener"}
+                  </Heading>
                 </CardHeader>
-                <VStack spacing={4} p={4}>
-
+                <VStack spacing={5} p={5}>
                   <InputBox
-                    placeholderText="link to shorten"
+                    placeholderText="Link to shorten"
                     onChange={handleUrlToShortenChange}
                     onKeyDown={handleKeyDown}
                     className="UrlInputBox"
@@ -205,7 +206,7 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
                   />
 
                   <InputBox
-                    placeholderText="custom alias (optional)"
+                    placeholderText="Custom alias (optional)"
                     onChange={handleCustomAliasChange}
                     onKeyDown={handleKeyDown}
                     className="CustomAliasInputBox"
@@ -216,9 +217,11 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
                   <Button
                     onClick={handleSubmitButtonClick}
                     size="md"
+                    colorScheme="blue"
+                    variant="solid"
                     alignSelf="center"
                   >
-                    Shorten link!
+                    Shorten Link!
                   </Button>
                 </VStack>
               </Card>
