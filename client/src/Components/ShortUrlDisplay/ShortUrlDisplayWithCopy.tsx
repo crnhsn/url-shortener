@@ -35,8 +35,7 @@ const ShortUrlDisplayWithCopy: React.FC<ShortUrlDisplayWithCopyProps> = ({ short
     <InputGroup>
       <Input
         value={shortenedUrl}
-        isReadOnly
-        placeholder="Your shortened URL will appear here"
+        isReadOnly={true}
         size="lg"
         w="100%"
         variant="filled"
