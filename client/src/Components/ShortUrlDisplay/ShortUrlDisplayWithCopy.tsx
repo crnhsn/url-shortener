@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, IconButton, Input, InputGroup, InputRightElement, useToast} from '@chakra-ui/react';
+import {IconButton, Input, InputGroup, InputRightElement, useToast} from '@chakra-ui/react';
 import { BiSolidCopy } from "react-icons/bi";
 
 interface ShortUrlDisplayWithCopyProps {
@@ -10,6 +10,7 @@ const ShortUrlDisplayWithCopy: React.FC<ShortUrlDisplayWithCopyProps> = ({ short
 
   const toast = useToast();
 
+  // want to indicate to user that link was copied successfully if copy icon clicked
   const handleCopyIconClick = () => {
 
     navigator.clipboard.writeText(shortenedUrl).then(() => {
@@ -19,7 +20,7 @@ const ShortUrlDisplayWithCopy: React.FC<ShortUrlDisplayWithCopyProps> = ({ short
         duration: 600,
         isClosable: true,
       });
-    }).catch(() => {
+    }).catch(() => { // unsure in what circumstances a clipboard copy might fail, but probably good to have this
       toast({
         title: "Sorry, copy failed! Please try copying manually.",
         status: "error",

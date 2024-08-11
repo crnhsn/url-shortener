@@ -1,13 +1,14 @@
 import React from 'react';
 import './App.css';
-import UrlShortener from "./Components/UrlShortener/UrlShortener";
+import UrlShortenerMainComponent from './Components/MainComponents/UrlShortenerMainComponent';
 
 
 
 function App() {
+
   return (
     <div className="App">
-      <UrlShortener />
+      <UrlShortenerMainComponent />
     </div>
   );
 }
