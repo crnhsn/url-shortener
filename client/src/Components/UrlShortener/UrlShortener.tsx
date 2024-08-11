@@ -1,19 +1,39 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Box, Button, Card, CardHeader, Center, Heading, Stack, VStack} from "@chakra-ui/react";
+import {Box, Button, Card, CardHeader, Center, Heading, VStack} from "@chakra-ui/react";
 
 import InputBox from '../Inputs/InputBox/InputBox';
 
 import {shortenUrl} from "../../API/UrlShortenerAPI";
 import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
 
+import {
+    URL_NOT_PROVIDED_OR_INVALID_MESSAGE,
+    URL_TOO_LONG_MESSAGE,
+    CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE,
+    CUSTOM_ALIAS_UNAVAILABLE_MESSAGE,
+    UNEXPECTED_ERROR_MESSAGE
+  } from '../../ErrorMessages/ClientErrorMessages';
+
+import {
+    URL_NOT_PROVIDED,
+    URL_INVALID,
+    URL_TOO_LONG,
+    CUSTOM_ALIAS_NOT_ALPHANUMERIC,
+    CUSTOM_ALIAS_TOO_LONG,
+    CUSTOM_ALIAS_UNAVAILABLE,
+    UNEXPECTED_ERROR
+  } from '../../ErrorMessages/ServerErrorMessages';
+
+
 interface UrlShortenerProps {
     maxUrlLength : number,
     maxAliasLength : number,
     urlValidator : (url: string) => boolean,
     aliasValidator : (alias: string) => boolean
+    componentHeading? : string
 }
 
-const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidator}) => {
+const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidator, componentHeading}) => {
 
     const [urlToShorten, setUrlToShorten] = useState("");
     const [customAlias, setCustomAlias] = useState("");
@@ -28,26 +48,6 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
 
     const urlIsValid = urlValidator;
     const aliasIsValid = aliasValidator;
-
-    // error messages the server sends back - todo - lift into file / env and sync with server
-    const URL_NOT_PROVIDED = "URL_REQUIRED";
-    const URL_INVALID = "URL_INVALID";
-    const URL_TOO_LONG = "URL_LENGTH";
-
-    const CUSTOM_ALIAS_NOT_ALPHANUMERIC = "CUSTOM_ALIAS_FORMAT";
-    const CUSTOM_ALIAS_TOO_LONG = "CUSTOM_ALIAS_LENGTH";
-    const CUSTOM_ALIAS_UNAVAILABLE = "CUSTOM_ALIAS_UNAVAILABLE";
-
-    const UNEXPECTED_ERROR = "INTERNAL_SERVER_ERROR";
-
-    // error messages client displays - todo - lift into file / env? maybe not env
-    const URL_NOT_PROVIDED_OR_INVALID_MESSAGE = "Please enter a valid URL, starting with http or https.";
-    const URL_TOO_LONG_MESSAGE = "The provided URL is too long. Please shorten the URL.";
-
-    const CUSTOM_ALIAS_NOT_ALPHANUMERIC_OR_TOO_LONG_MESSAGE = `The custom alias must be alphanumeric and fewer than some characters. Please choose another alias.`;
-    const CUSTOM_ALIAS_UNAVAILABLE_MESSAGE = "The provided alias is not available. Please select another.";
-
-    const UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred. Please try again later.";
 
 
 
@@ -104,7 +104,7 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
         try {
             // if we are at this point
             // the inputs are valid
-            // so reset the state that tracks validity
+            // so reset the states that track validity
             // and execute api call
             setUrlErrorMessage("");
             setAliasErrorMessage("");
@@ -190,7 +190,7 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
             <VStack spacing={6}>
               <Card w="100%">
                 <CardHeader>
-                  <Heading size='md' textAlign="center">URL Shortener</Heading>
+                    <Heading size='md' textAlign="center">{componentHeading ? componentHeading : "URL Shortener"}</Heading>
                 </CardHeader>
                 <VStack spacing={4} p={4}>
 
