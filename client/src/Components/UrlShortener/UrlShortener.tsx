@@ -6,8 +6,6 @@ import InputBox from '../Inputs/InputBox/InputBox';
 import {shortenUrl} from "../../API/UrlShortenerAPI";
 import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
 
-import Lottie from "lottie-react";
-
 import {
     URL_NOT_PROVIDED_OR_INVALID_MESSAGE,
     URL_TOO_LONG_MESSAGE,
