@@ -6,7 +6,8 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
-      - REACT_APP_URL_SHORTENER_API_BASE_URL=http://localhost:3000
+      - REACT_APP_API_BASE_URL=http://localhost:3000
+
 
   server:
     build:
@@ -14,7 +15,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_URLS=http://+:5275
-      - FRONTEND_BASE_URL=http://localhost:3000
+      - FRONTEND_BASE_URL=localhost:3000/
+      - REDIS_CONNECTION_STRING=redis:6379
 
   nginx:
     image: nginx:alpine
