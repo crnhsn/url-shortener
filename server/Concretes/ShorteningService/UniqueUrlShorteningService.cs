@@ -1,4 +1,5 @@
 using UrlShortener.Concretes.Data;
+using UrlShortener.ErrorHandling.CustomExceptions;
 using UrlShortener.Interfaces;
 
 namespace UrlShortener.Concretes.ShorteningService;
@@ -26,8 +27,6 @@ public class UniqueUrlShorteningService : IUrlShortenerService
 
     public async Task<string> CreateShortUrl(string longUrl, string? customShortCode = null)
     {
-        // todo: add validation for incoming strings, etc.
-        // validation might be better as middleware at the top level
         
         string shortCode = String.Empty;
 
@@ -40,15 +39,16 @@ public class UniqueUrlShorteningService : IUrlShortenerService
             shortCode = customShortCode;
         }
 
-        // todo: do some kind of handling for if the short code is empty by this point or null by this point
+        if (String.IsNullOrWhiteSpace(shortCode))
+        {
+            throw new ShortCodeException("Short code should not be empty or null at this point.");
+        }
 
         bool writeSucceeded = await writeShortCodeToDataStore(shortCode, longUrl);
 
-        // todo: what to do if write didn't succeed? error? retry? error for now, but maybe retry
-        // based on the reason it didn't succeed (e.g., have a WriteResult that stores exception info)
         if (!writeSucceeded)
         {
-            throw new Exception("Generated shortened URL, but failed to write shortened URL to data store.");
+            throw new ShortCodeException("Did not successfully write short code to data store.");
         }
 
         string shortenedUrl = BASE_URL + shortCode;
@@ -58,14 +58,14 @@ public class UniqueUrlShorteningService : IUrlShortenerService
 
     public async Task<string> ResolveShortUrl(string shortUrl)
     {
-        ReadResult<string> readResult = await _dataStore.TryReadAsync(shortUrl);
-        if (readResult.Success)
+        ReadOperation<string> readResult = await _dataStore.TryReadAsync(shortUrl);
+        if (readResult.FoundValue)
         {
             return readResult.Value;
         }
         else
         {
-            throw new Exception($"Unable to resolve {shortUrl}"); // todo: update ReadResult to store exceptions, and add to this
+            throw new ShortCodeException($"Unable to resolve {shortUrl}");
         }
     }
 

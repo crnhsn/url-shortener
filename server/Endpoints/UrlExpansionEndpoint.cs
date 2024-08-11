@@ -13,22 +13,26 @@ public static class UrlExpansionEndpoint
         {
             try
             {
-                // bind the incoming short code to a model so validation of the short code
-                // can just use existing model validation flow instead of needing custom flow
+                // bind the incoming short code to a model for validation
                 
                 var expansionRequest = new ExpansionRequest(shortCode);
 
-                var validationContext = new ValidationContext(expansionRequest);
-                var validationResults = new List<ValidationResult>();
-                bool isValid = Validator.TryValidateObject(expansionRequest,
-                                                           validationContext,
-                                                           validationResults,
-                                                           validateAllProperties:true);
+                bool isValid = ModelValidator.Validate(expansionRequest,
+                    out var validationResults);
+
 
                 if (!isValid)
                 {
                     List<string?> errorMessages = validationResults.Select(r => r.ErrorMessage).ToList();
                     return Results.BadRequest(errorMessages);
+                }
+
+                bool shortCodeUnused = await urlShortener.IsShortCodeAvailable(shortCode);
+
+                // if a short code isn't in use, then we can't redirect using it 
+                if (shortCodeUnused)
+                {
+                    return Results.NotFound(ResponseErrorMessages.ShortCodeNotFound);
                 }
 
                 string longUrl = await urlShortener.ResolveShortUrl(shortCode);
@@ -37,8 +41,7 @@ public static class UrlExpansionEndpoint
             }
             catch (Exception ex)
             {
-                // todo: log exception?
-                // todo - catch custom exceptions here and send 404 if Resolve above doesn't find anything
+                // todo: log exception
 
                 return Results.Problem(ResponseErrorMessages.InternalServerError,
                                        statusCode: StatusCodes.Status500InternalServerError);
