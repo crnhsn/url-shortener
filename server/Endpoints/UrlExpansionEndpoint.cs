@@ -14,7 +14,6 @@ public static class UrlExpansionEndpoint
             try
             {
                 // bind the incoming short code to a model for validation
-                
                 var expansionRequest = new ExpansionRequest(shortCode);
 
                 bool isValid = ModelValidator.Validate(expansionRequest,
@@ -29,10 +28,11 @@ public static class UrlExpansionEndpoint
 
                 bool shortCodeUnused = await urlShortener.IsShortCodeAvailable(shortCode);
 
-                // if a short code isn't in use, then we can't redirect using it 
+                // if a short code isn't in use, then we can't redirect using it
+                // so send a 404 back along with server-side HTML
                 if (shortCodeUnused)
                 {
-                    return Results.NotFound(ResponseErrorMessages.ShortCodeNotFound);
+                    return getShortCodeNotFoundResponse();
                 }
 
                 string longUrl = await urlShortener.ResolveShortUrl(shortCode);
@@ -50,4 +50,19 @@ public static class UrlExpansionEndpoint
         }).WithName("ExpandUrl");
     }
     
+    private static IResult getShortCodeNotFoundResponse()
+    {
+        string notFoundHtml = @"<html>
+                            <body>
+                    <h1>404 Not Found - This short code is not in use.</h1>
+                    <a href='/'>Back to home</a>
+                            </body>
+                           </html>";
+
+        return Results.Text(content: notFoundHtml,
+                    contentType: "text/html",
+                    statusCode: (int?)System.Net.HttpStatusCode.NotFound);
+
+    }
+
 }
