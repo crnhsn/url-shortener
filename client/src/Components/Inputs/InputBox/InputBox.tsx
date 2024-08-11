@@ -17,7 +17,7 @@ const InputBox: React.FC<InputBoxProps> = ({ placeholderText, onChange, onKeyDow
                        onChange={onChange}
                        onKeyDown={onKeyDown}
                        isInvalid={isInvalid}
-                       borderColor={isInvalid ? "red.500" : "gray.200"}
+                       borderColor={isInvalid ? "red" : "gray"}
                 />
                 <FormErrorMessage>{errorMessage}</FormErrorMessage>
             </FormControl>
