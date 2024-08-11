@@ -1,4 +1,5 @@
 using UrlShortener.Concretes.Data;
+using UrlShortener.Config;
 using UrlShortener.ErrorHandling.CustomExceptions;
 using UrlShortener.Interfaces;
 
@@ -14,14 +15,13 @@ public class UniqueUrlShorteningService : IUrlShortenerService
         
     public UniqueUrlShorteningService(IShorteningProvider<string, string> shortener,
                                       IDataRepository<string, string> dataStore,
-                                      int maxShortenRetries = 3,
-                                      string baseUrl = Constants.BaseUrl.Stem)
+                                      int maxShortenRetries)
     {
         _shortener = shortener;
         _dataStore = dataStore;
         
         MAX_SHORTEN_RETRIES = maxShortenRetries;
-        BASE_URL = baseUrl; 
+        BASE_URL = EnvironmentalVariables.BASE_URL;
     }
 
 
@@ -103,9 +103,6 @@ public class UniqueUrlShorteningService : IUrlShortenerService
 
         while (shortCodeAlreadyExists && retryCount < maxRetries)
         {
-            // todo: improve this retry logic somehow - maybe a retry controller of some kind
-            // probably need to account for various flows here - e.g., user passed in a custom url vs not
-            // if user passed in custom, and it already exists, vs if user didn't pass in random one
             shortCode = _shortener.Shorten(longUrl);
             shortCodeAlreadyExists = !await IsShortCodeAvailable(shortCode);
             retryCount += 1;
@@ -116,7 +113,7 @@ public class UniqueUrlShorteningService : IUrlShortenerService
         // without managing to generate a unique URL short code not already in the data store
         if (shortCodeAlreadyExists)
         {
-            throw new Exception($"Failed to generate a unique short code for {longUrl}. " +
+            throw new ShortCodeException($"Failed to generate a unique short code for {longUrl}. " +
                 $"Attempted unique short code generation {MAX_SHORTEN_RETRIES + 1} times.");
         }
 
