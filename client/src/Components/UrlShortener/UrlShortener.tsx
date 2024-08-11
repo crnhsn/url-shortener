@@ -6,6 +6,8 @@ import InputBox from '../Inputs/InputBox/InputBox';
 import {shortenUrl} from "../../API/UrlShortenerAPI";
 import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
 
+import Lottie from "lottie-react";
+
 import {
     URL_NOT_PROVIDED_OR_INVALID_MESSAGE,
     URL_TOO_LONG_MESSAGE,
@@ -190,12 +192,12 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
           <Box className="UrlShortener" p={4} w="lg"  bg="white" borderRadius="lg" boxShadow="lg">
             <VStack spacing={5}>
               <Card w="100%" borderRadius="sm" boxShadow="sm">
-                <CardHeader>
-                  <Heading size="lg" textAlign="center" color="blue.600">
-                    {componentHeading ? componentHeading : "URL Shortener"}
-                  </Heading>
-                </CardHeader>
                 <VStack spacing={5} p={5}>
+
+                    <Heading size="lg" textAlign="center" color="black">
+                      {componentHeading ? componentHeading : "URL Shortener"}
+                    </Heading>
+
                   <InputBox
                     placeholderText="Link to shorten"
                     onChange={handleUrlToShortenChange}
@@ -217,7 +219,7 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
                   <Button
                     onClick={handleSubmitButtonClick}
                     size="md"
-                    colorScheme="blue"
+                    colorScheme="teal"
                     variant="solid"
                     alignSelf="center"
                   >
