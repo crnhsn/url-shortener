@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 
-const BASE_URL = process.env.REACT_APP_URL_SHORTENER_API_BASE_URL;
+const BASE_URL = "http://localhost:3000";
 
 const api = axios.create({ baseURL: BASE_URL,
                            validateStatus: () => true});
