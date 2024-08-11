@@ -129,16 +129,17 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
             }
             else // second case: request got to server, but server failed the request - so extract error info and handle
             {
-                handleError(response.data);
+                handleServerError(response.data);
             }
         }
         catch (error) // third case - failure for some other reason
         {
-            // todo - handle
+            console.log(error);
+            setUrlErrorMessage(UNEXPECTED_ERROR_MESSAGE);
         }
     };
 
-    const handleError = (errorMessage: string) => {
+    const handleServerError = (errorMessage: string) => {
 
         setShortenedUrl(""); // an error should reset the URL display
 
