@@ -5,20 +5,17 @@ using UrlShortener.Concretes.Hashing;
 using UrlShortener.Concretes.Randomness;
 using UrlShortener.Concretes.Shorteners;
 using UrlShortener.Concretes.ShorteningService;
+using UrlShortener.Config;
+using UrlShortener.Constants;
 
 
 namespace UrlShortener.ServiceConfiguration;
 
 public static class ServiceManager
 {
-    const string BASE_URL = Constants.BaseUrl.Stem; // todo: replace this with env var
-    const int SHORT_URL_LENGTH = Constants.Lengths.SHORT_URL_LENGTH;
-    
-    const string REDIS_CONNECTION_STRING = Constants.DatabaseConnectionStrings.REDIS; // todo: replace with env var
-    
+
     const int MAX_SHORTEN_RETRIES = 3;
     
-    const string ALLOWED_CORS_ORIGINS =  "http://localhost:3000"; // todo: replace with env var, in production this will probably be different
 
     public static void ConfigureCustomServices(this IServiceCollection services)
     {
@@ -28,12 +25,12 @@ public static class ServiceManager
         
         services.AddSingleton<IEncoder<byte[], string>, UrlSafeBase64Encoder>();
         
-        services.AddSingleton<IRandomnessProvider<string>>(new UrlSafeRandomStringProvider(SHORT_URL_LENGTH));
+        services.AddSingleton<IRandomnessProvider<string>>(new UrlSafeRandomStringProvider(Lengths.SHORT_URL_LENGTH));
         
-        services.AddSingleton<IDataRepository<string, string>>(new RedisDataRepository(REDIS_CONNECTION_STRING));
+        services.AddSingleton<IDataRepository<string, string>>(new RedisDataRepository(EnvironmentalVariables.REDIS_CONNECTION_STRING));
         
         services.AddSingleton<IShorteningProvider<string, string>>(provider =>
-            new RandomizedHashBasedShortener(SHORT_URL_LENGTH,
+            new RandomizedHashBasedShortener(Lengths.SHORT_URL_LENGTH,
                 provider.GetRequiredService<IHashProvider<string, byte[]>>(),
                 provider.GetRequiredService<IEncoder<byte[], string>>(),
                 provider.GetRequiredService<IRandomnessProvider<string>>()));
@@ -41,8 +38,8 @@ public static class ServiceManager
         services.AddSingleton<IUrlShortenerService>(provider =>
             new UniqueUrlShorteningService(provider.GetRequiredService<IShorteningProvider<string, string>>(),
                                            provider.GetRequiredService<IDataRepository<string, string>>(),
-                                           MAX_SHORTEN_RETRIES,
-                                           BASE_URL));
+                                           MAX_SHORTEN_RETRIES
+                                           ));
         
     }
 
@@ -53,7 +50,7 @@ public static class ServiceManager
             options.AddPolicy("AllowList", policyBuilder =>
             {
                 policyBuilder
-                    .WithOrigins(ALLOWED_CORS_ORIGINS)  // Use environment variable values
+                    .WithOrigins(EnvironmentalVariables.ALLOWED_CORS_ORIGIN)  // Use environment variable values
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
