@@ -223,7 +223,7 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
                     variant="solid"
                     alignSelf="center"
                   >
-                    Shorten Link!
+                    Shorten Link
                   </Button>
                 </VStack>
               </Card>
