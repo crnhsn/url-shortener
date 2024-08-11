@@ -1,50 +1,21 @@
 using System.ComponentModel.DataAnnotations;
+using UrlShortener.Endpoints.RequestModels;
 using UrlShortener.Interfaces;
+using UrlShortener.ErrorHandling;
 
 namespace UrlShortener.Endpoints;
 
 public static class UrlShortenEndpoint
 {
-    private static class ErrorMessages
-    {
-        public const string UrlNotProvided = "URL_REQUIRED";
-        public const string UrlInvalid = "URL_INVALID";
-        public const string UrlTooLong = "URL_LENGTH";
-
-        public const string CustomAliasNotAlphanumeric = "CUSTOM_ALIAS_FORMAT";
-        public const string CustomAliasTooLong = "CUSTOM_ALIAS_LENGTH";
-        public const string CustomAliasUnavailable = "CUSTOM_ALIAS_UNAVAILABLE";
-
-        public const string InternalServerError = "INTERNAL_SERVER_ERROR";
-
-    }
-
-    private class ShortenRequest
-    {
-        [Required(ErrorMessage = ErrorMessages.UrlNotProvided)]
-        [Url(ErrorMessage = ErrorMessages.UrlInvalid)]
-        [StringLength(Constants.Lengths.MAX_LONG_URL_LENGTH, ErrorMessage = ErrorMessages.UrlTooLong)]
-        public string LongUrl {get; set;}
-
-        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.CustomAliasNotAlphanumeric)]
-        [StringLength(Constants.Lengths.SHORT_URL_LENGTH, ErrorMessage = ErrorMessages.CustomAliasTooLong)]
-        public string? CustomAlias {get; set;}
-    }
-
     public static void MapUrlShortenEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapPost("/shorten", async (ShortenRequest shortenRequest, IUrlShortenerService urlShortener) =>
             {
                 try
                 {
-                    // validate incoming POST request params via model validation
-                    var validationContext = new ValidationContext(shortenRequest);
-                    var validationResults = new List<ValidationResult>();
-
-                    bool isValid = Validator.TryValidateObject(shortenRequest,
-                                                               validationContext,
-                                                               validationResults,
-                                                               validateAllProperties:true);
+                    // validate incoming POST request body
+                    // by binding to data model and validating
+                    bool isValid = ModelValidator.Validate(shortenRequest, out var validationResults);
 
                     if (!isValid)
                     {
@@ -63,7 +34,7 @@ public static class UrlShortenEndpoint
             
                         if (!isCustomAliasAvailable)
                         {
-                            return Results.Conflict(ErrorMessages.CustomAliasUnavailable);
+                            return Results.Conflict(ResponseErrorMessages.CustomAliasUnavailable);
                         }
                     }
 
@@ -74,9 +45,8 @@ public static class UrlShortenEndpoint
                 catch (Exception ex)
                 {
                     // todo: log exception?
-                    // todo: catch custom exceptions here and return different error to client if needed
 
-                    return Results.Problem(ErrorMessages.InternalServerError,
+                    return Results.Problem(ResponseErrorMessages.InternalServerError,
                                            statusCode: StatusCodes.Status500InternalServerError);
                 }
             })

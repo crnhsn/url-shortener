@@ -20,18 +20,17 @@ public class RedisDataRepository : IDataRepository<string, string>
         return writeSucceeded;
     }
 
-    public async Task<ReadResult<string>> TryReadAsync(string key)
+    public async Task<ReadOperation<string>> TryReadAsync(string key)
     {
         var redisValue = await _database.StringGetAsync(key);
         
         if (redisValue.HasValue)
         {
-            return ReadResult<string>.SuccessResult(redisValue.ToString());
+            return ReadOperation<string>.FoundResult(redisValue.ToString());
         }
-        else
-        {
-            return ReadResult<string>.FailureResult();
-        }
+
+        return ReadOperation<string>.NoResult();
+
     }
 
     public async Task<bool> KeyExistsAsync(string key)

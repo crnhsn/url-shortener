@@ -1,26 +1,26 @@
 namespace UrlShortener.Concretes.Data;
 
-public class ReadResult<T>
+public class ReadOperation<T>
 {
-    public bool Success { get; private set; }
+    public bool FoundValue { get; private set; }
     public T Value { get; private set; }
 
     // private constructor to enforce usage of factory methods
-    private ReadResult(bool success, T value)
+    private ReadOperation(bool success, T value)
     {
-        Success = success;
+        FoundValue = success;
         Value = value;
     }
 
-    // factory method for successful read
-    public static ReadResult<T> SuccessResult(T value)
+    // factory method for read that found data
+    public static ReadOperation<T> FoundResult(T value)
     {
-        return new ReadResult<T>(true, value);
+        return new ReadOperation<T>(true, value);
     }
 
     // factory method for failed read
-    public static ReadResult<T> FailureResult()
+    public static ReadOperation<T> NoResult()
     {
-        return new ReadResult<T>(false, default);
+        return new ReadOperation<T>(false, default(T));
     }
 }

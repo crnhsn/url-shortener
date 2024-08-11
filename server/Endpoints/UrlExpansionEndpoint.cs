@@ -1,57 +1,38 @@
 using System.ComponentModel.DataAnnotations;
+using UrlShortener.Endpoints.RequestModels;
 using UrlShortener.Interfaces;
+using UrlShortener.ErrorHandling;
 
 namespace UrlShortener.Endpoints;
 
 public static class UrlExpansionEndpoint
 {
-    private static class ErrorMessages
-    {
-        public const string ShortCodeMissing = "SHORT_CODE_MISSING";
-        public const string ShortCodeIsNotAlphanumeric = "SHORT_CODE_FORMAT";
-        public const string ShortCodeTooLong = "SHORT_CODE_LENGTH";
-
-        public const string ShortCodeNotFound = "SHORT_CODE_NOT_FOUND";
-
-        public const string InternalServerError = "INTERNAL_SERVER_ERROR";
-
-
-    }
-    private class ExpansionRequest
-    {
-        [Required(ErrorMessage = ErrorMessages.ShortCodeMissing)]
-        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = ErrorMessages.ShortCodeIsNotAlphanumeric)]
-        [StringLength(Constants.Lengths.MAX_LONG_URL_LENGTH, ErrorMessage = ErrorMessages.ShortCodeTooLong)]
-        public string ShortCode {get; set;}
-
-        public ExpansionRequest(string shortCode)
-        {
-            ShortCode = shortCode;
-        }
-    }
-    
     public static void MapUrlExpansionEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("/{shortCode}", async (string shortCode, IUrlShortenerService urlShortener) =>
         {
             try
             {
-                // bind the incoming short code to a model so validation of the short code
-                // can just use existing model validation flow instead of needing custom flow
-                
+                // bind the incoming short code to a model for validation
                 var expansionRequest = new ExpansionRequest(shortCode);
 
-                var validationContext = new ValidationContext(expansionRequest);
-                var validationResults = new List<ValidationResult>();
-                bool isValid = Validator.TryValidateObject(expansionRequest,
-                                                           validationContext,
-                                                           validationResults,
-                                                           validateAllProperties:true);
+                bool isValid = ModelValidator.Validate(expansionRequest,
+                    out var validationResults);
+
 
                 if (!isValid)
                 {
                     List<string?> errorMessages = validationResults.Select(r => r.ErrorMessage).ToList();
                     return Results.BadRequest(errorMessages);
+                }
+
+                bool shortCodeUnused = await urlShortener.IsShortCodeAvailable(shortCode);
+
+                // if a short code isn't in use, then we can't redirect using it
+                // so send a 404 back along with server-side HTML
+                if (shortCodeUnused)
+                {
+                    return getShortCodeNotFoundResponse();
                 }
 
                 string longUrl = await urlShortener.ResolveShortUrl(shortCode);
@@ -60,14 +41,28 @@ public static class UrlExpansionEndpoint
             }
             catch (Exception ex)
             {
-                // todo: log exception?
-                // todo - catch custom exceptions here and send 404 if Resolve above doesn't find anything
+                // todo: log exception
 
-                return Results.Problem(ErrorMessages.InternalServerError,
+                return Results.Problem(ResponseErrorMessages.InternalServerError,
                                        statusCode: StatusCodes.Status500InternalServerError);
             }
     
         }).WithName("ExpandUrl");
     }
     
+    private static IResult getShortCodeNotFoundResponse()
+    {
+        string notFoundHtml = @"<html>
+                            <body>
+                    <h1>404 Not Found - This short code is not in use.</h1>
+                    <a href='/'>Back to home</a>
+                            </body>
+                           </html>";
+
+        return Results.Text(content: notFoundHtml,
+                    contentType: "text/html",
+                    statusCode: (int?)System.Net.HttpStatusCode.NotFound);
+
+    }
+
 }
