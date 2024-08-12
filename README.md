@@ -82,6 +82,7 @@ To tear down the Docker containers, run:
 docker-compose down
 ```
 
+in the same directory as the docker-compose.yml. 
 
 ## Project Structure
 
