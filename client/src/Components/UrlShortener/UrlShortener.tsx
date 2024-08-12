@@ -1,10 +1,13 @@
-import React, {ChangeEvent, useState} from 'react';
-import {Box, Button, Card, CardHeader, Center, Heading, VStack} from "@chakra-ui/react";
+import React, {ChangeEvent, useState, useEffect} from 'react';
+import {Box, Button, Card, Center, Heading, VStack} from "@chakra-ui/react";
 
 import InputBox from '../Inputs/InputBox/InputBox';
 
 import {shortenUrl} from "../../API/UrlShortenerAPI";
 import ShortUrlDisplayWithCopy from '../ShortUrlDisplay/ShortUrlDisplayWithCopy';
+
+import LottiePlayer from 'react-lottie-player';
+import {AnimationUrl} from "../../Constants/Animation";
 
 import {
     URL_NOT_PROVIDED_OR_INVALID_MESSAGE,
@@ -46,10 +49,29 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
     const [urlErrorMessage, setUrlErrorMessage] = useState("");
     const [aliasErrorMessage, setAliasErrorMessage] = useState("");
 
+    const [animationData, setAnimationData] = useState(null);
+    const [animationKey, setAnimationKey] = useState(0); // will use this to re-render the animation as needed
+
     const urlIsValid = urlValidator;
     const aliasIsValid = aliasValidator;
 
+    const animationUrl = AnimationUrl;
 
+    useEffect(() => {
+        // get animation data on initial load
+        fetch(animationUrl)
+            .then((response) => response.json())
+            .then((data) => setAnimationData(data))
+            .catch((error) => console.error("Error loading animation:", error));
+    }, []);
+
+    // every time a new shortened url is generated, increment the animation key
+    // which will re-render the animation, since the animation key is on the animation component
+    useEffect(() => {
+        if (shortenedUrl) {
+            setAnimationKey(animationKey + 1);
+        }
+    }, [shortenedUrl]);
 
     const handleUrlToShortenChange = (e : ChangeEvent<HTMLInputElement>) => {
 
@@ -188,11 +210,21 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
     return (
         <Center height="100vh" bg="gray.50">
           <Box className="UrlShortener" p={4} w="lg"  bg="white" borderRadius="lg" boxShadow="lg">
-            <VStack spacing={5}>
+            <VStack spacing={4}>
               <Card w="100%" borderRadius="sm" boxShadow="sm">
-                <VStack spacing={5} p={5}>
+                <VStack spacing={4} p={4}>
 
-                    <Heading size="lg" textAlign="center" color="black">
+                    {animationData && (
+                                <LottiePlayer
+                                    key={animationKey}
+                                    animationData={animationData}
+                                    play={true}
+                                    style={{ height: 300, width: 300 }}
+                                    loop={false}
+                                />
+                            )}
+
+                    <Heading size="lg" textAlign="center" color="black" marginTop={animationData ? -12: 0}>
                       {componentHeading ? componentHeading : "URL Shortener"}
                     </Heading>
 
