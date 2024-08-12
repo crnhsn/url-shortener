@@ -26,11 +26,12 @@ To run this locally, please follow one of the below sets of instructions.
 ### Semi-Automated Approach
 1. Open a bash shell and navigate to the desired directory.
 
-2. Download the run-setup.sh bash script provided in this repo to your local directory, and run the script. The script automates steps 2 - 4 of the manual instructions detailed below. The run-setup.sh script is located in the same directory as this README. To run the script:
+2. Download the run-setup.sh bash script provided in this repo to your local directory, and run the script:
 
 ```
 bash run-setup.sh
 ```
+The script automates steps 2 - 4 of the manual instructions detailed below. The run-setup.sh script is located in the same directory as this README.
 
 3. In a browser, navigate to
 ```
