@@ -68,6 +68,8 @@ If there are any issues, please try the manual approach detailed below.
 
 ## Stopping the Application
 
+Terminate the application process (e.g., via CTRL + C in the shell). 
+
 To tear down the Docker containers, run:
 
 
