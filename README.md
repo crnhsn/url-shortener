@@ -31,6 +31,7 @@ To run this locally, please follow one of the below sets of instructions.
 ```
 bash run-setup.sh
 ```
+The run-setup.sh script is located in the root directory of this repo (in the same directory as this README). 
 
 3. In a browser, navigate to
 ```
