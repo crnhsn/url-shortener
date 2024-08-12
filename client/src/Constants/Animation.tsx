@@ -1,1 +1,1 @@
-export const AnimationUrl = ""; 
+export const AnimationUrl = "https://lottie.host/397378a4-1d7a-446e-b86c-5366ca20cca0/uZP8NvFCyR.json"; 

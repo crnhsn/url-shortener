@@ -32,11 +32,12 @@ interface UrlShortenerProps {
     maxUrlLength : number,
     maxAliasLength : number,
     urlValidator : (url: string) => boolean,
-    aliasValidator : (alias: string) => boolean
-    componentHeading? : string
+    aliasValidator : (alias: string) => boolean,
+    componentHeading? : string,
+    componentTagline? : string
 }
 
-const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidator, componentHeading}) => {
+const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidator, componentHeading, componentTagline}) => {
 
     const [urlToShorten, setUrlToShorten] = useState("");
     const [customAlias, setCustomAlias] = useState("");
@@ -226,7 +227,13 @@ const UrlShortener : React.FC<UrlShortenerProps> = ({urlValidator, aliasValidato
 
                     <Heading size="lg" textAlign="center" color="black" marginTop={animationData ? -12: 0}>
                       {componentHeading ? componentHeading : "URL Shortener"}
+                      {componentTagline && (
+                          <p style={{ fontSize: '0.8rem', color: 'gray', textAlign: 'center', marginTop: '0.5rem' }}>
+                            {componentTagline}
+                          </p>
+                        )}
                     </Heading>
+
 
                   <InputBox
                     placeholderText="Link to shorten"
