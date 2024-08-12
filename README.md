@@ -31,7 +31,6 @@ To run this locally, please follow one of the below sets of instructions.
 ```
 bash run-setup.sh
 ```
-The script automates steps 2 - 4 of the manual instructions detailed below. The run-setup.sh script is located in the same directory as this README.
 
 3. In a browser, navigate to
 ```
