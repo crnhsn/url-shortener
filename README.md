@@ -17,13 +17,30 @@ Before you begin, please ensure you have the following installed on your system:
 - Docker
 - Docker Compose
 
+Please ensure Docker is running. 
+
 ## Getting Started
 
-To run this locally: 
+To run this locally, please follow one of the below sets of instructions.
 
-1. Ensure Docker is running on your machine.
+### Semi-Automated Approach
+1. Open a bash shell.
 
-2. Clone the repository.
+2. Copy the run-setup.sh bash script provided in this repo to your local, and run the script. The script automates steps 2 - 4 of the manual instructions detailed below. The run-setup.sh script is located in the same directory as this README. 
+
+5. In a browser, navigate to
+```
+http://localhost:3000
+```
+to access the application. 
+
+If there are any issues, please try the manual approach detailed below.
+
+### Manual Approach
+
+1. Open a command-line interface / shell. 
+
+2. Clone this repository.
 
 3. Navigate to the project root:
 
